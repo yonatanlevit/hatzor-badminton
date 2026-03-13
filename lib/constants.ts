@@ -1,0 +1,30 @@
+export const COLORS = {
+  primary: '#1B5E20',
+  accent: '#FFD600',
+  background: '#FAFAFA',
+  white: '#FFFFFF',
+  text: '#212121',
+  textSecondary: '#757575',
+  error: '#D32F2F',
+  border: '#E0E0E0',
+};
+
+export const STRINGS = {
+  appName: 'בדמינטון חצור',
+  login: 'כניסה',
+  email: 'אימייל',
+  password: 'סיסמא',
+  logout: 'התנתק',
+  greeting: 'שלום',
+  weeklyBoard: 'לוח שבועי',
+  players: 'שחקנים',
+  settings: 'הגדרות',
+  tournaments: 'לוח תחרויות',
+  personalChats: 'שיחות אישיות',
+  notifications: 'התראות',
+  comingSoon: 'בקרוב',
+  loginError: 'שגיאה בהתחברות',
+  invalidCredentials: 'אימייל או סיסמא שגויים',
+  fieldRequired: 'שדה חובה',
+  loading: 'טוען...',
+};
