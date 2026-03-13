@@ -17,7 +17,7 @@ app/
   _layout.tsx          → Root layout: RTL, AuthProvider, role-based redirect
   (auth)/login.tsx     → Login screen (Hebrew)
   (coach)/             → Coach tabs: weekly, players, settings + custom tabBar with logout
-  (player)/            → Player tabs: weekly, tournaments, chats, notifications
+  (player)/            → Player tabs: weekly, tournaments, chats, notifications + custom tabBar with logout
 components/
   WeeklyCalendar.tsx   → Shared weekly calendar (day columns, RTL, legend, FAB)
   SessionCard.tsx      → Session card with color-coded type border, long-press delete
@@ -55,7 +55,7 @@ supabase/
 ## Development Phases
 - [x] Phase 0 — Project setup, auth, navigation, placeholders
 - [x] Phase 1 — Coach weekly board (calendar, add/delete sessions)
-- [ ] Phase 2 — Player weekly board (read-only, shared component)
+- [x] Phase 2 — Player weekly board (read-only, shared component)
 - [ ] Phase 3 — Player management (coach side)
 - [ ] Phase 4 — Push notifications
 - [ ] Phase 5 — Settings & polish
