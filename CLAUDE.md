@@ -18,10 +18,14 @@ app/
   (auth)/login.tsx     → Login screen (Hebrew)
   (coach)/             → Coach tabs: weekly, players, settings
   (player)/            → Player tabs: weekly, tournaments, chats, notifications
+components/
+  WeeklyCalendar.tsx   → Shared weekly calendar (day columns, RTL, legend, FAB)
+  SessionCard.tsx      → Session card with color-coded type border, long-press delete
+  AddSessionModal.tsx  → Modal form: day picker, type chips, time/location/notes
 contexts/
   AuthContext.tsx       → Auth state, login/logout, profile fetching
 lib/
-  constants.ts         → Colors, Hebrew strings
+  constants.ts         → Colors, Hebrew strings, training types with colors
   supabase.ts          → Supabase client (SecureStore on mobile, localStorage on web)
   types.ts             → TypeScript interfaces matching DB schema
 supabase/
@@ -37,7 +41,7 @@ supabase/
 ## Style Guidelines
 - ENTIRE UI is in Hebrew (RTL)
 - RTL everywhere: writingDirection 'rtl', textAlign 'right'
-- Colors: primary=#1B5E20 (dark green), accent=#FFD600 (yellow), background=#FAFAFA
+- Colors: primary=#1B5E20 (dark green), accent=#FFD600 (yellow), background=#FAFAFA, calendarBlue=#1976D2
 - Clean, minimal sports-app aesthetic
 - React Native Paper components with green/yellow theme
 - Top of every main screen: "שלום, {full_name}" greeting
@@ -50,7 +54,7 @@ supabase/
 
 ## Development Phases
 - [x] Phase 0 — Project setup, auth, navigation, placeholders
-- [ ] Phase 1 — Coach weekly board (calendar, add/delete sessions)
+- [x] Phase 1 — Coach weekly board (calendar, add/delete sessions)
 - [ ] Phase 2 — Player weekly board (read-only, shared component)
 - [ ] Phase 3 — Player management (coach side)
 - [ ] Phase 4 — Push notifications
