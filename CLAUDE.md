@@ -16,7 +16,7 @@ A React Native + Expo mobile app for managing a weekly badminton training schedu
 app/
   _layout.tsx          → Root layout: RTL, AuthProvider, role-based redirect
   (auth)/login.tsx     → Login screen (Hebrew)
-  (coach)/             → Coach tabs: weekly, players, settings
+  (coach)/             → Coach tabs: weekly, players, settings + custom tabBar with logout
   (player)/            → Player tabs: weekly, tournaments, chats, notifications
 components/
   WeeklyCalendar.tsx   → Shared weekly calendar (day columns, RTL, legend, FAB)
