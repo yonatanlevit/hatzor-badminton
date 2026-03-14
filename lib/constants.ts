@@ -62,6 +62,14 @@ export const STRINGS = {
   deleteSession: 'מחיקת אימון',
   deleteConfirmation: 'האם למחוק את האימון?',
   delete: 'מחק',
+  // Player management
+  noPlayers: 'אין שחקנים רשומים',
+  editPlayer: 'עריכת שחקן',
+  deletePlayer: 'מחיקת שחקן',
+  deletePlayerConfirm: 'האם למחוק את השחקן?',
+  fullName: 'שם מלא',
+  phone: 'טלפון',
+  updateError: 'שגיאה בעדכון',
   // Errors
   saveError: 'שגיאה בשמירה',
   deleteError: 'שגיאה במחיקה',

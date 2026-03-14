@@ -22,6 +22,8 @@ components/
   WeeklyCalendar.tsx   → Shared weekly calendar (day columns, RTL, legend, FAB)
   SessionCard.tsx      → Session card with color-coded type border, long-press delete
   AddSessionModal.tsx  → Modal form: day picker, type chips, time/location/notes
+  PlayerCard.tsx       → Player card with tap-to-edit, long-press delete
+  EditPlayerModal.tsx  → Modal form: edit player name & phone
 contexts/
   AuthContext.tsx       → Auth state, login/logout, profile fetching
 lib/
@@ -56,6 +58,6 @@ supabase/
 - [x] Phase 0 — Project setup, auth, navigation, placeholders
 - [x] Phase 1 — Coach weekly board (calendar, add/delete sessions)
 - [x] Phase 2 — Player weekly board (read-only, shared component)
-- [ ] Phase 3 — Player management (coach side)
+- [x] Phase 3 — Player management (coach side)
 - [ ] Phase 4 — Push notifications
 - [ ] Phase 5 — Settings & polish
