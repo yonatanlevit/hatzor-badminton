@@ -4,7 +4,7 @@
 A React Native + Expo mobile app for managing a weekly badminton training schedule for Hatzor Badminton Club. Two roles: Coach/Admin and Player.
 
 ## Tech Stack
-- React Native + Expo SDK 55 (managed workflow)
+- React Native + Expo SDK 54 (managed workflow) — upgrade to SDK 55 when preparing for production or when Expo Go adds SDK 55 support
 - Expo Router (file-based navigation)
 - Supabase (auth + PostgreSQL + RLS)
 - TypeScript
@@ -15,8 +15,10 @@ A React Native + Expo mobile app for managing a weekly badminton training schedu
 ```
 app/
   _layout.tsx          → Root layout: RTL, AuthProvider, role-based redirect
+  index.tsx            → Entry point / redirect
   (auth)/login.tsx     → Login screen (Hebrew)
   (coach)/             → Coach tabs: weekly, players, settings + custom tabBar with logout
+  (coach)/player/[id].tsx → Individual player detail page (conversation logs, goals)
   (player)/            → Player tabs: weekly, tournaments, chats, notifications + custom tabBar with logout
 components/
   WeeklyCalendar.tsx   → Shared weekly calendar (day columns, RTL, legend, FAB)
@@ -24,6 +26,10 @@ components/
   AddSessionModal.tsx  → Modal form: day picker, type chips, time/location/notes
   PlayerCard.tsx       → Player card with tap-to-edit, long-press delete
   EditPlayerModal.tsx  → Modal form: edit player name & phone
+  ConversationLogsSection.tsx → Display conversation logs for a player
+  AddConversationLogModal.tsx → Modal form: add conversation log
+  GoalsSection.tsx     → Display goals for a player
+  AddGoalModal.tsx     → Modal form: add goal
 contexts/
   AuthContext.tsx       → Auth state, login/logout, profile fetching
 lib/
@@ -36,7 +42,7 @@ supabase/
 
 ## Supabase
 - Project ref: xwnxpycygxxesmxvcfap
-- Tables: profiles, training_sessions, announcements
+- Tables: profiles, training_sessions, announcements, conversation_logs, goals
 - Custom function: `is_coach()` — SECURITY DEFINER to avoid RLS recursion
 - Coach user UUID: de8098ad-ae85-4dc6-a836-648686680499
 

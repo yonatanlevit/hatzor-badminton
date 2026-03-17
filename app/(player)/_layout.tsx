@@ -7,7 +7,7 @@ import { useAuth } from '../../contexts/AuthContext';
 const TAB_CONFIG: Record<string, { title: string; icon: string }> = {
   weekly: { title: STRINGS.weeklyBoard, icon: 'calendar-week' },
   tournaments: { title: STRINGS.tournaments, icon: 'trophy' },
-  chats: { title: STRINGS.personalChats, icon: 'chat' },
+  chats: { title: STRINGS.conversationLogs, icon: 'chat' },
   notifications: { title: STRINGS.notifications, icon: 'bell' },
 };
 
@@ -56,7 +56,7 @@ export default function PlayerLayout() {
     >
       <Tabs.Screen name="weekly" options={{ title: STRINGS.weeklyBoard }} />
       <Tabs.Screen name="tournaments" options={{ title: STRINGS.tournaments }} />
-      <Tabs.Screen name="chats" options={{ title: STRINGS.personalChats }} />
+      <Tabs.Screen name="chats" options={{ title: STRINGS.conversationLogs }} />
       <Tabs.Screen name="notifications" options={{ title: STRINGS.notifications }} />
     </Tabs>
   );

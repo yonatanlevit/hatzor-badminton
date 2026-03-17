@@ -6,7 +6,7 @@ export default function ChatsScreen() {
   return (
     <View style={styles.container}>
       <Text variant="titleLarge" style={styles.title}>
-        {STRINGS.personalChats}
+        {STRINGS.conversationLogs}
       </Text>
       <Text variant="bodyLarge" style={styles.subtitle}>
         {STRINGS.comingSoon}

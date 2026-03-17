@@ -1,20 +1,19 @@
 import { useState, useEffect, useCallback } from 'react';
 import { View, FlatList, StyleSheet } from 'react-native';
 import { Text, ActivityIndicator, Snackbar } from 'react-native-paper';
+import { useRouter } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 import { COLORS, STRINGS } from '../../lib/constants';
 import type { Profile } from '../../lib/types';
 import PlayerCard from '../../components/PlayerCard';
-import EditPlayerModal from '../../components/EditPlayerModal';
 
 export default function CoachPlayersScreen() {
   const { profile } = useAuth();
+  const router = useRouter();
   const [players, setPlayers] = useState<Profile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-  const [editingPlayer, setEditingPlayer] = useState<Profile | null>(null);
-  const [modalVisible, setModalVisible] = useState(false);
 
   const fetchPlayers = useCallback(async () => {
     setIsLoading(true);
@@ -36,23 +35,8 @@ export default function CoachPlayersScreen() {
     fetchPlayers();
   }, [fetchPlayers]);
 
-  const handleEdit = (player: Profile) => {
-    setEditingPlayer(player);
-    setModalVisible(true);
-  };
-
-  const handleSave = async (id: string, updates: { full_name: string; phone: string }) => {
-    setModalVisible(false);
-    const { error: updateError } = await supabase
-      .from('profiles')
-      .update(updates)
-      .eq('id', id);
-
-    if (updateError) {
-      setError(STRINGS.updateError);
-    } else {
-      fetchPlayers();
-    }
+  const handlePlayerPress = (player: Profile) => {
+    router.push(`/(coach)/player/${player.id}`);
   };
 
   const handleDelete = async (id: string) => {
@@ -86,19 +70,12 @@ export default function CoachPlayersScreen() {
           data={players}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
-            <PlayerCard player={item} onEdit={handleEdit} onDelete={handleDelete} />
+            <PlayerCard player={item} onEdit={handlePlayerPress} onDelete={handleDelete} />
           )}
           contentContainerStyle={styles.list}
           showsVerticalScrollIndicator={false}
         />
       )}
-
-      <EditPlayerModal
-        visible={modalVisible}
-        player={editingPlayer}
-        onDismiss={() => setModalVisible(false)}
-        onSave={handleSave}
-      />
 
       <Snackbar
         visible={!!error}

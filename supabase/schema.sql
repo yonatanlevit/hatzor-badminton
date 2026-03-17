@@ -58,3 +58,42 @@ create policy "Everyone reads announcements" on announcements for select using (
 create policy "Coaches manage announcements" on announcements for all using (
   exists (select 1 from profiles where id = auth.uid() and role in ('coach', 'admin'))
 );
+
+-- Conversation logs (coach-only journal for face-to-face conversations)
+create table conversation_logs (
+  id uuid primary key default gen_random_uuid(),
+  player_id uuid references profiles(id) on delete cascade not null,
+  coach_id uuid references profiles(id) not null,
+  conversation_date date not null default current_date,
+  summary text not null,
+  created_at timestamptz default now()
+);
+
+alter table conversation_logs enable row level security;
+create policy "Players read own conversation logs" on conversation_logs
+  for select using (auth.uid() = player_id);
+create policy "Coaches read all conversation logs" on conversation_logs
+  for select using (is_coach());
+create policy "Coaches manage conversation logs" on conversation_logs
+  for insert with check (is_coach());
+create policy "Coaches delete conversation logs" on conversation_logs
+  for delete using (is_coach());
+
+-- Goals
+create table goals (
+  id uuid primary key default gen_random_uuid(),
+  player_id uuid references profiles(id) on delete cascade not null,
+  created_by uuid references profiles(id) not null,
+  title text not null,
+  description text,
+  status text not null check (status in ('active', 'completed', 'cancelled')) default 'active',
+  target_date date,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+alter table goals enable row level security;
+create policy "Players read own goals" on goals for select using (auth.uid() = player_id);
+create policy "Coaches read all goals" on goals for select using (is_coach());
+create policy "Players manage own goals" on goals for all using (auth.uid() = player_id);
+create policy "Coaches manage all goals" on goals for all using (is_coach());

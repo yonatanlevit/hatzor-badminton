@@ -29,3 +29,24 @@ export interface Announcement {
   created_by: string | null;
   created_at: string;
 }
+
+export interface ConversationLog {
+  id: string;
+  player_id: string;
+  coach_id: string;
+  conversation_date: string;
+  summary: string;
+  created_at: string;
+}
+
+export interface Goal {
+  id: string;
+  player_id: string;
+  created_by: string;
+  title: string;
+  description: string | null;
+  status: 'active' | 'completed' | 'cancelled';
+  target_date: string | null;
+  created_at: string;
+  updated_at: string;
+}

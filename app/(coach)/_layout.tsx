@@ -56,6 +56,7 @@ export default function CoachLayout() {
       <Tabs.Screen name="weekly" options={{ title: STRINGS.weeklyBoard }} />
       <Tabs.Screen name="players" options={{ title: STRINGS.players }} />
       <Tabs.Screen name="settings" options={{ title: STRINGS.settings }} />
+      <Tabs.Screen name="player/[id]" options={{ href: null, headerShown: false }} />
     </Tabs>
   );
 }
