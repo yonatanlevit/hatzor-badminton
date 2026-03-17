@@ -1,4 +1,4 @@
-import { View, StyleSheet, Pressable, Text, Platform } from 'react-native';
+import { View, StyleSheet, Pressable, Text, Platform, Alert } from 'react-native';
 import { Tabs } from 'expo-router';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { COLORS, STRINGS } from '../../lib/constants';
@@ -19,7 +19,14 @@ export default function CoachLayout() {
         logout();
       }
     } else {
-      logout();
+      Alert.alert(
+        'יציאה',
+        'האם אתה בטוח שאת/ה רוצה לצאת?',
+        [
+          { text: 'ביטול', style: 'cancel' },
+          { text: 'יציאה', style: 'destructive', onPress: () => logout() },
+        ]
+      );
     }
   };
 
