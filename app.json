@@ -1,1 +1,37 @@
-test
+{
+  "expo": {
+    "name": "בדמינטון חצור",
+    "slug": "hatzor-badminton",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "hatzor-badminton",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#3949AB"
+    },
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.hatzor.badminton"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#3949AB",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "package": "com.hatzor.badminton",
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store"
+    ]
+  }
+}
