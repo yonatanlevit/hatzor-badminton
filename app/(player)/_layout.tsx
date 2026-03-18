@@ -39,7 +39,6 @@ export default function PlayerLayout() {
             const config = TAB_CONFIG[route.name];
             if (!config) return null;
             const isFocused = state.index === index;
-            const color = isFocused ? COLORS.primary : COLORS.textSecondary;
             return (
               <Pressable
                 key={route.key}
@@ -48,14 +47,25 @@ export default function PlayerLayout() {
                 }}
                 style={styles.tab}
               >
-                <MaterialCommunityIcons name={config.icon as any} size={24} color={color} />
-                <Text style={[styles.tabLabel, { color }]}>{config.title}</Text>
+                {isFocused && <View style={styles.activeIndicator} />}
+                <View style={[styles.iconWrap, isFocused && styles.iconWrapActive]}>
+                  <MaterialCommunityIcons
+                    name={config.icon as any}
+                    size={22}
+                    color={isFocused ? COLORS.primary : COLORS.textMuted}
+                  />
+                </View>
+                <Text style={[styles.tabLabel, isFocused ? styles.tabLabelActive : styles.tabLabelInactive]}>
+                  {config.title}
+                </Text>
               </Pressable>
             );
           })}
           <Pressable onPress={handleLogoutPress} style={styles.tab}>
-            <Text style={{ fontSize: 22 }}>🚪</Text>
-            <Text style={[styles.tabLabel, { color: COLORS.error }]}>יציאה</Text>
+            <View style={styles.iconWrap}>
+              <MaterialCommunityIcons name="logout" size={22} color={COLORS.textMuted} />
+            </View>
+            <Text style={[styles.tabLabel, styles.tabLabelInactive]}>יציאה</Text>
           </Pressable>
         </View>
       )}
@@ -75,17 +85,50 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.white,
     borderTopWidth: 1,
     borderTopColor: COLORS.border,
-    paddingBottom: 6,
-    paddingTop: 6,
+    paddingBottom: 20,
+    paddingTop: 0,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 8,
+    elevation: 10,
   },
   tab: {
     flex: 1,
     alignItems: 'center',
+    justifyContent: 'flex-start',
+    paddingTop: 0,
+    position: 'relative',
+  },
+  activeIndicator: {
+    position: 'absolute',
+    top: 0,
+    width: 28,
+    height: 3,
+    borderBottomLeftRadius: 3,
+    borderBottomRightRadius: 3,
+    backgroundColor: COLORS.primary,
+  },
+  iconWrap: {
+    width: 40,
+    height: 32,
+    borderRadius: 12,
+    alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 8,
+  },
+  iconWrapActive: {
+    backgroundColor: COLORS.primaryLight,
   },
   tabLabel: {
     fontSize: 11,
-    fontWeight: '600',
     marginTop: 2,
+    fontWeight: '600',
+  },
+  tabLabelActive: {
+    color: COLORS.primary,
+  },
+  tabLabelInactive: {
+    color: COLORS.textMuted,
   },
 });
