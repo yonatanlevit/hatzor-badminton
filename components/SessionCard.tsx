@@ -1,5 +1,5 @@
-import { Pressable, View, StyleSheet } from 'react-native';
-import { Text, Dialog, Portal, Button } from 'react-native-paper';
+import { Pressable, View, StyleSheet, Text } from 'react-native';
+import { Dialog, Portal, Button } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useState, useRef, useCallback } from 'react';
 import { COLORS, STRINGS, TRAINING_TYPES } from '../lib/constants';
@@ -48,20 +48,24 @@ export default function SessionCard({ session, canDelete, onDelete }: SessionCar
   return (
     <>
       <Pressable onPressIn={handlePressIn} onPressOut={handlePressOut}>
-        <View style={[styles.card, { borderRightWidth: 4, borderRightColor: typeColor }]}>
-          {/* Time at the top */}
-          <Text style={styles.time}>{startTime} - {endTime}</Text>
-          {/* Session name */}
-          {displayName ? (
-            <Text style={styles.name} numberOfLines={2}>{displayName}</Text>
-          ) : null}
-          {/* Location */}
-          {session.location ? (
-            <View style={styles.locationRow}>
-              <Text style={styles.location} numberOfLines={1}>{session.location}</Text>
-              <MaterialCommunityIcons name="map-marker-outline" size={11} color={COLORS.textSecondary} />
+        <View style={[styles.card, { borderRightColor: typeColor }]}>
+          <View style={styles.iconWrapper}>
+            <View style={[styles.iconBg, { backgroundColor: typeColor + '22' }]}>
+              <Text style={styles.iconText}>🏸</Text>
             </View>
-          ) : null}
+          </View>
+          <View style={styles.textBlock}>
+            {displayName ? (
+              <Text style={styles.name} numberOfLines={1}>{displayName}</Text>
+            ) : null}
+            <Text style={styles.time}>{startTime} – {endTime}</Text>
+            {session.location ? (
+              <View style={styles.locationRow}>
+                <Text style={styles.location} numberOfLines={1}>{session.location}</Text>
+                <MaterialCommunityIcons name="map-marker-outline" size={11} color={COLORS.textMuted} />
+              </View>
+            ) : null}
+          </View>
         </View>
       </Pressable>
 
@@ -87,41 +91,61 @@ export default function SessionCard({ session, canDelete, onDelete }: SessionCar
 const styles = StyleSheet.create({
   card: {
     backgroundColor: COLORS.white,
-    borderRadius: 10,
-    paddingVertical: 8,
-    paddingLeft: 6,
-    paddingRight: 10,
-    elevation: 3,
+    borderRadius: 14,
+    paddingVertical: 10,
+    paddingLeft: 10,
+    paddingRight: 12,
+    borderRightWidth: 4,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.12,
-    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.07,
+    shadowRadius: 6,
+    elevation: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
   },
-  time: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: COLORS.calendarBlue,
-    textAlign: 'right',
-    writingDirection: 'rtl',
+  iconWrapper: {
+    flexShrink: 0,
+  },
+  iconBg: {
+    width: 34,
+    height: 34,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconText: {
+    fontSize: 16,
+  },
+  textBlock: {
+    flex: 1,
+    alignItems: 'flex-end',
   },
   name: {
-    fontSize: 12,
-    fontWeight: 'bold',
+    fontSize: 13,
+    fontWeight: '700',
     color: COLORS.text,
     textAlign: 'right',
     writingDirection: 'rtl',
-    marginTop: 3,
+    marginBottom: 2,
+  },
+  time: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: COLORS.primary,
+    textAlign: 'right',
   },
   locationRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'flex-end',
-    marginTop: 4,
-    gap: 2,
+    gap: 3,
+    marginTop: 3,
   },
   location: {
-    fontSize: 10,
-    color: COLORS.textSecondary,
+    fontSize: 11,
+    color: COLORS.textMuted,
     textAlign: 'right',
     writingDirection: 'rtl',
   },
