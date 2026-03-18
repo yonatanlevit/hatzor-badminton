@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { View, FlatList, Pressable, StyleSheet } from 'react-native';
-import { Text, FAB, Dialog, Portal, Button, ActivityIndicator } from 'react-native-paper';
+import { View, FlatList, Pressable, StyleSheet, Text } from 'react-native';
+import { FAB, Dialog, Portal, Button, ActivityIndicator } from 'react-native-paper';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { supabase } from '../lib/supabase';
 import { COLORS, STRINGS } from '../lib/constants';
 import type { ConversationLog } from '../lib/types';
@@ -62,7 +63,6 @@ export default function ConversationLogsSection({ playerId, coachId, onError }: 
     if (!deleteLog) return;
     const logId = deleteLog.id;
     setDeleteLog(null);
-
     const { error } = await supabase.from('conversation_logs').delete().eq('id', logId);
     if (error) {
       onError(STRINGS.deleteError);
@@ -92,7 +92,10 @@ export default function ConversationLogsSection({ playerId, coachId, onError }: 
       onPressOut={() => handlePressOut(item.id)}
     >
       <View style={styles.card}>
-        <Text style={styles.date}>{formatDate(item.conversation_date)}</Text>
+        <View style={styles.cardHeader}>
+          <MaterialCommunityIcons name="chat-processing-outline" size={14} color={COLORS.textMuted} />
+          <Text style={styles.date}>{formatDate(item.conversation_date)}</Text>
+        </View>
         <Text style={styles.summary}>{item.summary}</Text>
       </View>
     </Pressable>
@@ -110,6 +113,7 @@ export default function ConversationLogsSection({ playerId, coachId, onError }: 
     <View style={styles.container}>
       {logs.length === 0 ? (
         <View style={styles.centered}>
+          <Text style={styles.emptyEmoji}>💬</Text>
           <Text style={styles.empty}>{STRINGS.noConversationLogs}</Text>
         </View>
       ) : (
@@ -135,7 +139,6 @@ export default function ConversationLogsSection({ playerId, coachId, onError }: 
         onSave={handleAdd}
       />
 
-      {/* Delete confirmation dialog */}
       <Portal>
         <Dialog visible={!!deleteLog} onDismiss={() => setDeleteLog(null)}>
           <Dialog.Title style={styles.dialogTitle}>{STRINGS.deleteConversationLog}</Dialog.Title>
@@ -158,44 +161,35 @@ export default function ConversationLogsSection({ playerId, coachId, onError }: 
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  empty: {
-    fontSize: 16,
-    color: COLORS.textSecondary,
-  },
-  list: {
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    paddingBottom: 80,
-  },
+  container: { flex: 1 },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center', gap: 12 },
+  emptyEmoji: { fontSize: 40 },
+  empty: { fontSize: 15, color: COLORS.textMuted, textAlign: 'center' },
+  list: { paddingHorizontal: 16, paddingVertical: 12, paddingBottom: 80, gap: 10 },
   card: {
     backgroundColor: COLORS.white,
-    borderRadius: 10,
-    padding: 14,
-    marginBottom: 10,
-    elevation: 3,
+    borderRadius: 16,
+    padding: 16,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.12,
-    shadowRadius: 4,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.07,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    gap: 6,
+    marginBottom: 10,
   },
   date: {
-    fontSize: 14,
-    fontWeight: 'bold',
+    fontSize: 13,
+    fontWeight: '700',
     color: COLORS.primary,
-    textAlign: 'right',
-    writingDirection: 'rtl',
-    marginBottom: 6,
   },
   summary: {
-    fontSize: 15,
+    fontSize: 14,
     color: COLORS.text,
     textAlign: 'right',
     writingDirection: 'rtl',
@@ -206,14 +200,8 @@ const styles = StyleSheet.create({
     left: 16,
     bottom: 16,
     backgroundColor: COLORS.primary,
-    borderRadius: 28,
+    borderRadius: 16,
   },
-  dialogTitle: {
-    textAlign: 'right',
-    writingDirection: 'rtl',
-  },
-  dialogText: {
-    textAlign: 'right',
-    writingDirection: 'rtl',
-  },
+  dialogTitle: { textAlign: 'right', writingDirection: 'rtl' },
+  dialogText: { textAlign: 'right', writingDirection: 'rtl' },
 });
