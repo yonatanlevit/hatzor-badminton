@@ -1,13 +1,17 @@
 export const COLORS = {
-  primary: '#1B5E20',
+  primary: '#3949AB',
+  primaryDark: '#283593',
+  primaryLight: '#E8EAF6',
   accent: '#FFD600',
-  background: '#FAFAFA',
+  background: '#F7F8FA',
   white: '#FFFFFF',
   text: '#212121',
   textSecondary: '#757575',
+  textMuted: '#9E9E9E',
   error: '#D32F2F',
-  border: '#E0E0E0',
-  calendarBlue: '#1976D2',
+  border: '#F0F0F0',
+  divider: '#E8E8E8',
+  calendarBlue: '#1565C0',
 };
 
 export const TRAINING_TYPES = [
@@ -41,13 +45,10 @@ export const STRINGS = {
   invalidCredentials: 'אימייל או סיסמא שגויים',
   fieldRequired: 'שדה חובה',
   loading: 'טוען...',
-  // Day names (Sunday first — Israeli standard)
   days: ['ראשון', 'שני', 'שלישי', 'רביעי', 'חמישי', 'שישי', 'שבת'] as const,
-  // Weekly calendar
   previousWeek: 'שבוע קודם',
   nextWeek: 'שבוע הבא',
   noSessions: 'אין אימונים השבוע',
-  // Add session form
   addSession: 'הוספת אימון',
   sessionDate: 'תאריך',
   startTime: 'שעת התחלה',
@@ -58,11 +59,9 @@ export const STRINGS = {
   notes: 'הערות',
   save: 'שמור',
   cancel: 'ביטול',
-  // Delete confirmation
   deleteSession: 'מחיקת אימון',
   deleteConfirmation: 'האם למחוק את האימון?',
   delete: 'מחק',
-  // Player management
   noPlayers: 'אין שחקנים רשומים',
   editPlayer: 'עריכת שחקן',
   deletePlayer: 'מחיקת שחקן',
@@ -70,16 +69,13 @@ export const STRINGS = {
   fullName: 'שם מלא',
   phone: 'טלפון',
   updateError: 'שגיאה בעדכון',
-  // Errors
   saveError: 'שגיאה בשמירה',
   deleteError: 'שגיאה במחיקה',
   fetchError: 'שגיאה בטעינת נתונים',
-  // Player detail
   playerDetail: 'פרטי שחקן',
   tournamentsTab: 'תחרויות',
   conversationsTab: 'שיחות',
   goalsTab: 'יעדים',
-  // Conversation logs
   noConversationLogs: 'אין שיחות מתועדות',
   addConversationLog: 'הוספת שיחה',
   conversationDate: 'תאריך שיחה',
@@ -87,7 +83,6 @@ export const STRINGS = {
   deleteConversationLog: 'מחיקת שיחה',
   deleteConversationLogConfirm: 'האם למחוק את השיחה?',
   conversationLogSaveError: 'שגיאה בשמירת שיחה',
-  // Goals
   noGoals: 'אין יעדים',
   addGoal: 'הוספת יעד',
   goalTitle: 'כותרת',
@@ -98,18 +93,19 @@ export const STRINGS = {
   deleteGoal: 'מחיקת יעד',
   deleteGoalConfirm: 'האם למחוק את היעד?',
   goalTargetDate: 'תאריך יעד',
-  createdByCoach: 'נוצר ע״י מאמן',
-  createdByPlayer: 'נוצר ע״י שחקן',
+  createdByCoach: 'מאמן',
+  createdByPlayer: 'שחקן',
   goalSaveError: 'שגיאה בשמירת יעד',
   goalUpdateError: 'שגיאה בעדכון יעד',
-  tournamentsComingSoon: 'לוח תחרויות - בקרוב',
+  tournamentsComingSoon: 'לוח תחרויות — בקרוב',
   markCompleted: 'סמן כהושלם',
   markCancelled: 'בטל יעד',
   reactivate: 'הפעל מחדש',
+  searchPlaceholder: 'חיפוש שחקן...',
 };
 
 export const GOAL_STATUSES = [
   { key: 'active' as const, label: 'פעיל', color: '#4CAF50' },
-  { key: 'completed' as const, label: 'הושלם', color: '#1976D2' },
+  { key: 'completed' as const, label: 'הושלם', color: '#1565C0' },
   { key: 'cancelled' as const, label: 'בוטל', color: '#9E9E9E' },
 ];
