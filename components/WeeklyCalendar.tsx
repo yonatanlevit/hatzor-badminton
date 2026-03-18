@@ -1,5 +1,5 @@
-import { View, StyleSheet, ScrollView } from 'react-native';
-import { Text, IconButton, FAB, ActivityIndicator } from 'react-native-paper';
+import { View, StyleSheet, ScrollView, Text, Pressable } from 'react-native';
+import { IconButton, FAB, ActivityIndicator } from 'react-native-paper';
 import { COLORS, STRINGS, TRAINING_TYPES } from '../lib/constants';
 import type { TrainingSession } from '../lib/types';
 import SessionCard from './SessionCard';
@@ -27,12 +27,13 @@ function formatWeekRange(start: Date): string {
   const end = new Date(start);
   end.setDate(end.getDate() + 6);
   const fmt = (d: Date) =>
-    `${d.getDate().toString().padStart(2, '0')}.${(d.getMonth() + 1).toString().padStart(2, '0')}.${d.getFullYear()}`;
-  return `${fmt(end)} - ${fmt(start)}`;
+    `${d.getDate().toString().padStart(2, '0')}.${(d.getMonth() + 1).toString().padStart(2, '0')}`;
+  return `${fmt(start)} – ${fmt(end)}`;
 }
 
-function formatDayMonth(date: Date): string {
-  return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}`;
+function getMonthYearHe(date: Date): string {
+  const months = ['ינואר', 'פברואר', 'מרץ', 'אפריל', 'מאי', 'יוני', 'יולי', 'אוגוסט', 'ספטמבר', 'אוקטובר', 'נובמבר', 'דצמבר'];
+  return `${months[date.getMonth()]} ${date.getFullYear()}`;
 }
 
 export default function WeeklyCalendar({
@@ -48,25 +49,52 @@ export default function WeeklyCalendar({
 }: WeeklyCalendarProps) {
   const todayISO = toISODate(new Date());
 
-  const days: { date: Date; isoDate: string; dayIndex: number; dateNum: number }[] = [];
+  const days: { date: Date; isoDate: string; dayIndex: number }[] = [];
   for (let i = 0; i < 7; i++) {
     const date = new Date(weekStart);
     date.setDate(date.getDate() + i);
-    days.push({ date, isoDate: toISODate(date), dayIndex: date.getDay(), dateNum: date.getDate() });
+    days.push({ date, isoDate: toISODate(date), dayIndex: date.getDay() });
   }
-  // Reverse for RTL display: Sunday (first day) on the right, Saturday on the left
+  // RTL: show Sunday (index 6) first = rightmost, reversed for display
   const displayDays = [...days].reverse();
+
+  // Build agenda: only days with sessions + today
+  const agendaDays = displayDays.filter(d =>
+    (sessionsByDate.get(d.isoDate) ?? []).length > 0 || d.isoDate === todayISO
+  );
 
   return (
     <View style={styles.container}>
-      {/* Header: navigation + title */}
+
+      {/* Header */}
       <View style={styles.header}>
-        <IconButton icon="chevron-left" onPress={onNextWeek} iconColor={COLORS.text} size={28} />
+        <IconButton icon="chevron-left" onPress={onNextWeek} iconColor={COLORS.primary} size={26} />
         <View style={styles.headerCenter}>
           <Text style={styles.title}>לוח אימונים שבועי</Text>
-          <Text style={styles.dateRange}>{formatWeekRange(weekStart)}</Text>
+          <Text style={styles.dateRange}>{getMonthYearHe(weekStart)} • {formatWeekRange(weekStart)}</Text>
         </View>
-        <IconButton icon="chevron-right" onPress={onPreviousWeek} iconColor={COLORS.text} size={28} />
+        <IconButton icon="chevron-right" onPress={onPreviousWeek} iconColor={COLORS.primary} size={26} />
+      </View>
+
+      {/* Day chips row */}
+      <View style={styles.dayChipsRow}>
+        {displayDays.map(({ isoDate, dayIndex, date }) => {
+          const isToday = isoDate === todayISO;
+          const hasSessions = (sessionsByDate.get(isoDate) ?? []).length > 0;
+          return (
+            <View key={isoDate} style={[styles.dayChip, isToday && styles.dayChipToday]}>
+              <Text style={[styles.dayChipName, isToday && styles.dayChipTextToday]}>
+                {STRINGS.days[dayIndex].slice(0, 2)}
+              </Text>
+              <Text style={[styles.dayChipDate, isToday && styles.dayChipTextToday]}>
+                {date.getDate()}
+              </Text>
+              {hasSessions && (
+                <View style={[styles.dayDot, isToday && styles.dayDotToday]} />
+              )}
+            </View>
+          );
+        })}
       </View>
 
       {/* Legend */}
@@ -79,42 +107,39 @@ export default function WeeklyCalendar({
         ))}
       </View>
 
-      {/* Day columns header row */}
-      <View style={styles.dayHeadersRow}>
-        {displayDays.map(({ isoDate, dayIndex, date }) => {
-          const isToday = isoDate === todayISO;
-          return (
-            <View key={isoDate} style={styles.dayHeaderCell}>
-              <Text style={[styles.dayHeaderName, isToday && styles.dayHeaderNameToday]}>
-                {STRINGS.days[dayIndex]}
-              </Text>
-              <Text style={[styles.dayHeaderDate, isToday && styles.dayHeaderDateToday]}>
-                {formatDayMonth(date)}
-              </Text>
-              {isToday && <View style={styles.todayIndicator} />}
-            </View>
-          );
-        })}
-      </View>
+      <View style={styles.divider} />
 
-      {/* Divider */}
-      <View style={styles.headerDivider} />
-
-      {/* Day columns with session cards */}
+      {/* Agenda content */}
       {isLoading ? (
-        <ActivityIndicator style={styles.loader} color={COLORS.calendarBlue} size="large" />
+        <ActivityIndicator style={styles.loader} color={COLORS.primary} size="large" />
       ) : (
-        <ScrollView style={styles.columnsScroll} showsVerticalScrollIndicator={false}>
-          <View style={styles.columnsContainer}>
-            {displayDays.map(({ isoDate }, idx) => {
+        <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
+          {agendaDays.length === 0 ? (
+            <View style={styles.emptyWeek}>
+              <Text style={styles.emptyEmoji}>📅</Text>
+              <Text style={styles.emptyText}>{STRINGS.noSessions}</Text>
+            </View>
+          ) : (
+            agendaDays.map(({ isoDate, dayIndex, date }) => {
               const daySessions = (sessionsByDate.get(isoDate) ?? [])
                 .slice()
                 .sort((a, b) => a.start_time.localeCompare(b.start_time));
-              const isLast = idx === displayDays.length - 1;
+              const isToday = isoDate === todayISO;
+              const dayLabel = `${STRINGS.days[dayIndex]}, ${date.getDate().toString().padStart(2, '0')}.${(date.getMonth() + 1).toString().padStart(2, '0')}`;
               return (
-                <View key={isoDate} style={styles.dayColumnWrap}>
-                  <View style={styles.dayColumn}>
-                    {daySessions.length > 0 ? (
+                <View key={isoDate} style={styles.agendaDay}>
+                  <View style={styles.agendaDayHeader}>
+                    <View style={[styles.agendaDot, isToday && styles.agendaDotToday]} />
+                    <Text style={[styles.agendaDayLabel, isToday && styles.agendaDayLabelToday]}>
+                      {dayLabel}{isToday ? ' — היום' : ''}
+                    </Text>
+                  </View>
+                  <View style={styles.agendaSessions}>
+                    {daySessions.length === 0 ? (
+                      <View style={styles.noSessionsDay}>
+                        <Text style={styles.noSessionsText}>אין אימונים</Text>
+                      </View>
+                    ) : (
                       daySessions.map(session => (
                         <SessionCard
                           key={session.id}
@@ -123,19 +148,16 @@ export default function WeeklyCalendar({
                           onDelete={onDeleteSession}
                         />
                       ))
-                    ) : (
-                      <View style={styles.emptyColumn} />
                     )}
                   </View>
-                  {!isLast && <View style={styles.columnSeparator} />}
                 </View>
               );
-            })}
-          </View>
+            })
+          )}
+          <View style={{ height: 100 }} />
         </ScrollView>
       )}
 
-      {/* FAB for adding sessions */}
       {canEdit && (
         <FAB
           icon="plus"
@@ -151,138 +173,181 @@ export default function WeeklyCalendar({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.white,
+    backgroundColor: COLORS.background,
     paddingTop: 50,
   },
-  // Header
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    backgroundColor: COLORS.white,
     paddingHorizontal: 4,
+    paddingBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
   },
   headerCenter: {
     alignItems: 'center',
   },
   title: {
-    fontSize: 20,
-    fontWeight: 'bold',
+    fontSize: 16,
+    fontWeight: '700',
     color: COLORS.text,
     textAlign: 'center',
   },
   dateRange: {
-    fontSize: 13,
-    color: COLORS.textSecondary,
+    fontSize: 12,
+    color: COLORS.textMuted,
     marginTop: 2,
   },
-  // Legend
+  dayChipsRow: {
+    flexDirection: 'row',
+    backgroundColor: COLORS.white,
+    paddingHorizontal: 8,
+    paddingBottom: 12,
+    paddingTop: 8,
+    gap: 4,
+  },
+  dayChip: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: 6,
+    borderRadius: 12,
+    gap: 2,
+  },
+  dayChipToday: {
+    backgroundColor: COLORS.primary,
+  },
+  dayChipName: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: COLORS.textMuted,
+  },
+  dayChipDate: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: COLORS.text,
+  },
+  dayChipTextToday: {
+    color: COLORS.white,
+  },
+  dayDot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: COLORS.primary,
+  },
+  dayDotToday: {
+    backgroundColor: COLORS.white,
+  },
   legend: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
     paddingHorizontal: 16,
     paddingVertical: 10,
-    gap: 12,
+    gap: 8,
     flexWrap: 'wrap',
+    backgroundColor: COLORS.background,
   },
   legendItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F5F5F5',
-    borderRadius: 14,
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    gap: 6,
+    backgroundColor: COLORS.white,
+    borderRadius: 20,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    gap: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 2,
+    elevation: 1,
   },
   legendDot: {
-    width: 10,
-    height: 10,
-    borderRadius: 5,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
   },
   legendLabel: {
-    fontSize: 12,
+    fontSize: 11,
     color: COLORS.text,
     fontWeight: '500',
   },
-  // Day headers
-  dayHeadersRow: {
-    flexDirection: 'row',
-    paddingBottom: 8,
-    paddingHorizontal: 4,
-  },
-  dayHeaderCell: {
-    flex: 1,
-    alignItems: 'center',
-    position: 'relative',
-    paddingBottom: 6,
-  },
-  dayHeaderName: {
-    fontSize: 13,
-    color: COLORS.textSecondary,
-    fontWeight: '600',
-  },
-  dayHeaderNameToday: {
-    color: COLORS.calendarBlue,
-    fontWeight: '700',
-  },
-  dayHeaderDate: {
-    fontSize: 11,
-    color: COLORS.textSecondary,
-    marginTop: 2,
-  },
-  dayHeaderDateToday: {
-    color: COLORS.calendarBlue,
-    fontWeight: '700',
-  },
-  todayIndicator: {
-    position: 'absolute',
-    bottom: 0,
-    width: 24,
-    height: 3,
-    borderRadius: 1.5,
-    backgroundColor: COLORS.calendarBlue,
-  },
-  headerDivider: {
+  divider: {
     height: 1,
-    backgroundColor: '#E8E8E8',
+    backgroundColor: COLORS.border,
   },
-  // Columns
   loader: {
     flex: 1,
     justifyContent: 'center',
+    marginTop: 60,
   },
-  columnsScroll: {
+  scroll: {
     flex: 1,
   },
-  columnsContainer: {
+  emptyWeek: {
+    paddingTop: 80,
+    alignItems: 'center',
+    gap: 12,
+  },
+  emptyEmoji: {
+    fontSize: 48,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: COLORS.textMuted,
+    textAlign: 'center',
+  },
+  agendaDay: {
+    paddingHorizontal: 16,
+    paddingTop: 16,
+  },
+  agendaDayHeader: {
     flexDirection: 'row',
-    paddingHorizontal: 2,
-    paddingTop: 12,
-    paddingBottom: 80,
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 10,
+    justifyContent: 'flex-end',
   },
-  dayColumnWrap: {
-    flex: 1,
-    flexDirection: 'row',
+  agendaDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 3.5,
+    backgroundColor: COLORS.divider,
   },
-  dayColumn: {
-    flex: 1,
-    paddingHorizontal: 4,
+  agendaDotToday: {
+    backgroundColor: COLORS.primary,
+  },
+  agendaDayLabel: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: COLORS.textSecondary,
+  },
+  agendaDayLabelToday: {
+    color: COLORS.primary,
+  },
+  agendaSessions: {
     gap: 8,
   },
-  columnSeparator: {
-    width: 1,
-    backgroundColor: '#E8E8E8',
-    marginVertical: 4,
+  noSessionsDay: {
+    backgroundColor: COLORS.white,
+    borderRadius: 12,
+    padding: 14,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    borderStyle: 'dashed',
   },
-  emptyColumn: {
-    height: 40,
+  noSessionsText: {
+    fontSize: 13,
+    color: COLORS.textMuted,
   },
-  // FAB
   fab: {
     position: 'absolute',
     bottom: 24,
-    right: 24,
-    backgroundColor: COLORS.calendarBlue,
-    borderRadius: 28,
+    left: 20,
+    backgroundColor: COLORS.primary,
+    borderRadius: 16,
     elevation: 6,
   },
 });
