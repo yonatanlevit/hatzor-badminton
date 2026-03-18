@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { View, FlatList, StyleSheet } from 'react-native';
-import { Text, ActivityIndicator, Snackbar } from 'react-native-paper';
+import { View, FlatList, StyleSheet, TextInput, Text, Pressable } from 'react-native';
+import { ActivityIndicator, Snackbar } from 'react-native-paper';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
@@ -14,6 +15,7 @@ export default function CoachPlayersScreen() {
   const [players, setPlayers] = useState<Profile[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [search, setSearch] = useState('');
 
   const fetchPlayers = useCallback(async () => {
     setIsLoading(true);
@@ -52,22 +54,52 @@ export default function CoachPlayersScreen() {
     }
   };
 
+  const filtered = players.filter(p =>
+    p.full_name.includes(search) || (p.phone ?? '').includes(search)
+  );
+
   return (
     <View style={styles.container}>
-      <Text variant="headlineSmall" style={styles.greeting}>
-        {STRINGS.greeting}, {profile?.full_name}
-      </Text>
-      <Text variant="titleLarge" style={styles.title}>
-        {STRINGS.players}
-      </Text>
 
+      {/* Header */}
+      <View style={styles.header}>
+        <View style={styles.headerTop}>
+          <Text style={styles.playerCount}>{players.length} שחקנים</Text>
+          <Text style={styles.title}>השחקנים שלי</Text>
+        </View>
+
+        {/* Search bar */}
+        <View style={styles.searchBar}>
+          <MaterialCommunityIcons name="magnify" size={20} color={COLORS.textMuted} />
+          <TextInput
+            value={search}
+            onChangeText={setSearch}
+            placeholder={STRINGS.searchPlaceholder}
+            placeholderTextColor={COLORS.textMuted}
+            style={styles.searchInput}
+            textAlign="right"
+          />
+          {search.length > 0 && (
+            <Pressable onPress={() => setSearch('')}>
+              <MaterialCommunityIcons name="close-circle" size={18} color={COLORS.textMuted} />
+            </Pressable>
+          )}
+        </View>
+      </View>
+
+      {/* List */}
       {isLoading ? (
         <ActivityIndicator size="large" color={COLORS.primary} style={styles.loader} />
-      ) : players.length === 0 ? (
-        <Text style={styles.empty}>{STRINGS.noPlayers}</Text>
+      ) : filtered.length === 0 ? (
+        <View style={styles.emptyState}>
+          <Text style={styles.emptyEmoji}>👥</Text>
+          <Text style={styles.emptyText}>
+            {search.length > 0 ? 'לא נמצאו שחקנים' : STRINGS.noPlayers}
+          </Text>
+        </View>
       ) : (
         <FlatList
-          data={players}
+          data={filtered}
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <PlayerCard player={item} onEdit={handlePlayerPress} onDelete={handleDelete} />
@@ -92,31 +124,68 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: COLORS.background,
-    paddingTop: 60,
-    paddingHorizontal: 16,
   },
-  greeting: {
-    textAlign: 'right',
-    writingDirection: 'rtl',
-    color: COLORS.text,
-    marginBottom: 16,
+  header: {
+    backgroundColor: COLORS.white,
+    paddingTop: 60,
+    paddingHorizontal: 20,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: COLORS.border,
+  },
+  headerTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'baseline',
+    marginBottom: 14,
   },
   title: {
-    textAlign: 'center',
-    color: COLORS.primary,
-    fontWeight: 'bold',
-    marginBottom: 16,
+    fontSize: 22,
+    fontWeight: '800',
+    color: COLORS.text,
+    textAlign: 'right',
+    writingDirection: 'rtl',
   },
-  loader: {
-    marginTop: 40,
+  playerCount: {
+    fontSize: 13,
+    color: COLORS.textMuted,
+    fontWeight: '500',
   },
-  empty: {
-    textAlign: 'center',
-    color: COLORS.textSecondary,
-    fontSize: 16,
-    marginTop: 40,
+  searchBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F1F3F5',
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    gap: 8,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 15,
+    color: COLORS.text,
+    writingDirection: 'rtl',
+    padding: 0,
   },
   list: {
-    paddingBottom: 20,
+    padding: 16,
+    paddingBottom: 24,
+  },
+  loader: {
+    marginTop: 60,
+  },
+  emptyState: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  emptyEmoji: {
+    fontSize: 48,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: COLORS.textMuted,
+    textAlign: 'center',
   },
 });
